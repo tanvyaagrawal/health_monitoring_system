@@ -1,36 +1,67 @@
-# Health Monitoring System
+# Real-Time Health Monitoring System
 
 ## Overview
 
-A real-time Health Monitoring System developed using React and Vite that continuously monitors vital health parameters and displays them through an interactive dashboard.
+A full-stack IoT Health Monitoring System that continuously acquires physiological data from wearable sensors, processes the data in real time, generates health alerts, and visualizes patient vitals through an interactive web dashboard.
 
-The system receives live sensor data through WebSocket communication and provides real-time visualization, status monitoring, and medical alerts.
+The system integrates biomedical sensors with a Python backend and a React-based frontend to provide continuous monitoring of critical health parameters such as heart rate, blood oxygen saturation (SpO₂), and body temperature.
 
 ---
 
-## Features
+## Key Features
 
-### Real-Time Monitoring
+### Real-Time Vital Monitoring
 
 * Heart Rate (BPM)
 * Blood Oxygen Saturation (SpO₂)
 * Body Temperature
 
-### Intelligent Health Alerts
+### Intelligent Alert System
 
 * Bradycardia Detection
 * Tachycardia Detection
-* Low SpO₂ Detection (Hypoxemia)
+* Hypoxemia Detection
 * Fever Detection
 * Hypothermia Detection
 
-### Dashboard Features
+### Live Dashboard
 
-* Live sensor status indicators
-* Automatic WebSocket reconnection
-* Real-time health data visualization
+* Real-time sensor updates
+* Interactive charts and visualizations
+* Device connection monitoring
+* Alert notifications
 * Responsive user interface
-* Alert prioritization and color-coded notifications
+
+### IoT Integration
+
+* MAX30102 Pulse Oximeter Sensor
+* DS18B20 Temperature Sensor
+* WebSocket-based communication
+* Continuous sensor data streaming
+
+---
+
+## System Architecture
+
+```text
+MAX30102 Sensor
+        │
+        ▼
+Heart Rate & SpO₂ Processing
+        │
+        ▼
+Python Backend Server
+        │
+        ├── Alert Manager
+        ├── Sensor Drivers
+        └── WebSocket Server
+        │
+        ▼
+React Dashboard
+        │
+        ▼
+Real-Time Visualization
+```
 
 ---
 
@@ -40,19 +71,22 @@ The system receives live sensor data through WebSocket communication and provide
 
 * React
 * Vite
-* JavaScript (ES6+)
-
-### Visualization
-
+* JavaScript
 * Recharts
+
+### Backend
+
+* Python
+* Async WebSockets
+
+### Hardware
+
+* MAX30102 Pulse Oximeter Sensor
+* DS18B20 Temperature Sensor
 
 ### Communication
 
-* WebSocket
-
-### Development Tools
-
-* ESLint
+* WebSocket Protocol
 
 ---
 
@@ -60,18 +94,38 @@ The system receives live sensor data through WebSocket communication and provide
 
 ```text
 health-monitoring-system/
-├── public/
-├── src/
-│   ├── assets/
-│   ├── App.jsx
-│   ├── App.css
-│   ├── main.jsx
-│   └── index.css
-├── index.html
-├── package.json
-├── vite.config.js
+
+├── frontend/
+│   ├── src/
+│   ├── public/
+│   ├── package.json
+│   ├── vite.config.js
+│   └── index.html
+│
+├── backend/
+│   ├── sensor_server.py
+│   ├── alert_manager.py
+│   ├── config.py
+│   ├── hrcalc.py
+│   ├── max30102_driver.py
+│   ├── ds18b20_driver.py
+│   └── requirements.txt
+│
 └── README.md
 ```
+
+---
+
+## Hardware Requirements
+
+### Sensors
+
+* MAX30102 Pulse Oximeter Sensor
+* DS18B20 Temperature Sensor
+
+### Processing Unit
+
+* Raspberry Pi (recommended)
 
 ---
 
@@ -80,23 +134,69 @@ health-monitoring-system/
 ### Clone Repository
 
 ```bash
-git clone https://github.com/<your-username>/health-monitoring-system.git
+git clone https://github.com/your-username/health-monitoring-system.git
 cd health-monitoring-system
 ```
 
-### Install Dependencies
+---
+
+## Backend Setup
+
+Create a virtual environment:
+
+```bash
+python -m venv venv
+```
+
+Activate environment:
+
+### Windows
+
+```bash
+venv\Scripts\activate
+```
+
+### Linux/macOS
+
+```bash
+source venv/bin/activate
+```
+
+Install dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+Start backend server:
+
+```bash
+python sensor_server.py
+```
+
+---
+
+## Frontend Setup
+
+Navigate to frontend directory:
+
+```bash
+cd frontend
+```
+
+Install dependencies:
 
 ```bash
 npm install
 ```
 
-### Run Development Server
+Run development server:
 
 ```bash
 npm run dev
 ```
 
-The application will be available at:
+Open:
 
 ```text
 http://localhost:5173
@@ -104,58 +204,64 @@ http://localhost:5173
 
 ---
 
-## Configuration
-
-Update the WebSocket endpoint in `src/App.jsx`:
-
-```javascript
-const WS_URL = "ws://YOUR_SERVER_IP:8765";
-```
-
-Replace `YOUR_SERVER_IP` with the IP address of your Raspberry Pi, ESP32 gateway, or backend server.
-
----
-
-## Health Status Logic
+## Health Alert Criteria
 
 ### Heart Rate
 
-| Condition   | Range        |
-| ----------- | ------------ |
-| Normal      | 45 – 130 BPM |
-| Bradycardia | < 45 BPM     |
-| Tachycardia | > 130 BPM    |
+| Condition   | Threshold  |
+| ----------- | ---------- |
+| Bradycardia | < 45 BPM   |
+| Normal      | 45–130 BPM |
+| Tachycardia | > 130 BPM  |
 
 ### SpO₂
 
-| Condition | Range  |
-| --------- | ------ |
-| Normal    | ≥ 95%  |
-| Low       | 90–94% |
-| Hypoxemia | < 90%  |
+| Condition  | Threshold |
+| ---------- | --------- |
+| Normal     | ≥ 95%     |
+| Low Oxygen | 90–94%    |
+| Hypoxemia  | < 90%     |
 
 ### Temperature
 
-| Condition   | Range           |
-| ----------- | --------------- |
-| Normal      | 35.0°C – 37.5°C |
-| Elevated    | 37.5°C – 38.5°C |
-| Fever       | > 38.5°C        |
-| Hypothermia | < 35.0°C        |
+| Condition   | Threshold     |
+| ----------- | ------------- |
+| Hypothermia | < 35°C        |
+| Normal      | 35°C–37.5°C   |
+| Elevated    | 37.5°C–38.5°C |
+| Fever       | > 38.5°C      |
+
+---
+
+## Applications
+
+* Remote Patient Monitoring
+* Elderly Care Systems
+* Home Health Monitoring
+* Telemedicine Platforms
+* Smart Healthcare Devices
+* Clinical Research
 
 ---
 
 ## Future Enhancements
 
-* Cloud data storage
-* Patient history tracking
-* Mobile application support
-* Doctor notification system
-* AI-based health risk prediction
-* Multi-patient monitoring
+* Cloud Database Integration
+* Historical Health Analytics
+* Mobile Application Support
+* Doctor Notification System
+* AI-Based Health Risk Prediction
+* Multi-Patient Monitoring
+* Electronic Health Record Integration
 
 ---
 
 ## Authors
 
-Developed as part of a Health Monitoring System project for real-time vital sign monitoring and visualization.
+Developed as an IoT-based healthcare monitoring solution for real-time physiological data acquisition, processing, and visualization.
+
+---
+
+## License
+
+This project is intended for educational, research, and healthcare technology development purposes.
